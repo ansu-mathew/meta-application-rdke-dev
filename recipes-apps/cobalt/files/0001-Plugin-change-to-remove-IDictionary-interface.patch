@@ -1,0 +1,103 @@
+From ede4a01a5aff2b3e814b1736c191aa7d76aab7f0 Mon Sep 17 00:00:00 2001
+From: Ansu Mathew <ansu.mathew@rdkcentral.com>
+Date: Wed, 5 Feb 2025 10:55:20 +0000
+Subject: [PATCH] Plugin change to remove IDictionary interface
+
+---
+ plugin/CobaltImplementation.cpp | 7 +++----
+ plugin/CobaltJsonRpc.cpp        | 5 ++++-
+ 2 files changed, 7 insertions(+), 5 deletions(-)
+
+diff --git a/plugin/CobaltImplementation.cpp b/plugin/CobaltImplementation.cpp
+index a9ea8bb..7dc309c 100644
+--- a/plugin/CobaltImplementation.cpp
++++ b/plugin/CobaltImplementation.cpp
+@@ -18,7 +18,6 @@
+ #include "Module.h"
+ #include <interfaces/IMemory.h>
+ #include <interfaces/IBrowser.h>
+-#include <interfaces/IDictionary.h>
+ #if defined(PLUGIN_COBALT_ENABLE_FOCUS_IFACE) && PLUGIN_COBALT_ENABLE_FOCUS_IFACE
+ #include <interfaces/IFocus.h>
+ #endif
+@@ -80,8 +79,7 @@ enum StateChangeCommand : uint16_t {
+ 
+ class CobaltImplementation:
+     public Exchange::IBrowser,
+-    public PluginHost::IStateControl,
+-    public Exchange::IDictionary
++    public PluginHost::IStateControl
+ #if defined(PLUGIN_COBALT_ENABLE_FOCUS_IFACE) && PLUGIN_COBALT_ENABLE_FOCUS_IFACE
+     , public Exchange::IFocus
+ #endif
+@@ -676,6 +674,7 @@ public:
+ #endif
+ 
+   // IDictionary iface
++#if 0
+   void Register(const string& nameSpace, struct IDictionary::INotification* sink) override  {  }
+   void Unregister(const string& nameSpace, struct IDictionary::INotification* sink) override  {  }
+   IIterator* Get(const string& nameSpace) const override { return nullptr; }
+@@ -701,6 +700,7 @@ public:
+     }
+     return false;
+   }
++#endif
+ 
+   void OnConcealRequest() {
+     // Device lifecycle tests from YTS expect 'suspend' behavior on 'conceal'
+@@ -711,7 +711,6 @@ public:
+   BEGIN_INTERFACE_MAP (CobaltImplementation)
+   INTERFACE_ENTRY (Exchange::IBrowser)
+   INTERFACE_ENTRY (PluginHost::IStateControl)
+-  INTERFACE_ENTRY (Exchange::IDictionary)
+ #if defined(PLUGIN_COBALT_ENABLE_FOCUS_IFACE) && PLUGIN_COBALT_ENABLE_FOCUS_IFACE
+   INTERFACE_ENTRY (Exchange::IFocus)
+ #endif
+diff --git a/plugin/CobaltJsonRpc.cpp b/plugin/CobaltJsonRpc.cpp
+index 6a70cd7..fa130a2 100644
+--- a/plugin/CobaltJsonRpc.cpp
++++ b/plugin/CobaltJsonRpc.cpp
+@@ -17,7 +17,6 @@
+ */
+ #include <interfaces/json/JsonData_Browser.h>
+ #include <interfaces/json/JsonData_StateControl.h>
+-#include <interfaces/IDictionary.h>
+ #include <core/Optional.h>
+ 
+ #include "Cobalt.h"
+@@ -203,6 +202,7 @@ uint32_t Cobalt::get_accessibility(JsonObject &response) const
+   ASSERT(_cobalt != nullptr);
+   uint32_t result = Core::ERROR_GENERAL;
+ 
++#if 0
+   Exchange::IDictionary *dict(
+     _cobalt->QueryInterface<Exchange::IDictionary>());
+   if (dict == nullptr) {
+@@ -220,6 +220,7 @@ uint32_t Cobalt::get_accessibility(JsonObject &response) const
+     }
+     dict->Release();
+   }
++#endif
+ 
+   return result;
+ }
+@@ -234,6 +235,7 @@ uint32_t Cobalt::set_accessibility(const JsonObject &param)
+   ASSERT(_cobalt != nullptr);
+   uint32_t result = Core::ERROR_BAD_REQUEST;
+ 
++#if 0
+   if (param.IsSet()) {
+     result = Core::ERROR_GENERAL;
+     Exchange::IDictionary *dict(
+@@ -254,6 +256,7 @@ uint32_t Cobalt::set_accessibility(const JsonObject &param)
+       dict->Release();
+     }
+   }
++#endif
+   return result;
+ }
+ 
+-- 
+2.25.1
+
